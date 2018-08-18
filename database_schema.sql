@@ -31,9 +31,9 @@ create table variant(
 	id integer UNSIGNED primary key auto_increment,
 	itemId integer UNSIGNED not null,
 	name varchar(100) not null,
-	sellingPrice decimal(8,2) not null,
-	costPrice decimal(8,2) not null,
-	quantity decimal(8,2) not null,
+	sellingPrice decimal(8,2) unsigned not null,
+	costPrice decimal(8,2) unsigned not null,
+	quantity SMALLINT unsigned not null,
 	CONSTRAINT fk_variant_item FOREIGN KEY (itemId) REFERENCES item(id)
 );
 create table variant_property(
