@@ -13,27 +13,26 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<hibernate.core.version>5.3.5.Final</hibernate.core.version>
-		<junit.version>3.8.1</junit.version>
+		<hibernate.core.version>5.3.4.Final</hibernate.core.version>
+		<junit.version>5.1.0</junit.version>
 		<mysql.connector.version>5.1.21</mysql.connector.version>
 	</properties>
 
 	<dependencies>
 		<!-- JUnit for testing -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 		
-		<!-- Hibernate 4.3.6 Final -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.core.version}</version>
 		</dependency>
-		
+
 		<!-- Mysql Connector -->
 		<dependency>
 			<groupId>mysql</groupId>
