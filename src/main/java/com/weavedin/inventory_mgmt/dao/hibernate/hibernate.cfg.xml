@@ -9,5 +9,10 @@
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 		<property name="show_sql">false</property>
 		<property name="current_session_context_class">thread</property>
+		
+		<!-- Add all classes which are persisted -->
+		<mapping class="com.weavedin.inventory_mgmt.Item" />
+		<mapping class="com.weavedin.inventory_mgmt.UserAction" />
+		<mapping class="com.weavedin.inventory_mgmt.Variant" />
 	</session-factory>
 </hibernate-configuration>

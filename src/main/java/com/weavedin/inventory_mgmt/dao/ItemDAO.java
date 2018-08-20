@@ -1,5 +1,7 @@
 package com.weavedin.inventory_mgmt.dao;
 
-public class ItemDAO {
+import com.weavedin.inventory_mgmt.Item;
+
+public interface ItemDAO extends DataDAO<Item, Long> {
 
 }
