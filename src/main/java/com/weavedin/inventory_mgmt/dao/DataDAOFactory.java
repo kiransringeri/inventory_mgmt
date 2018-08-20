@@ -6,6 +6,12 @@ import com.weavedin.inventory_mgmt.dao.hibernate.ItemHibernateDAO;
 import com.weavedin.inventory_mgmt.dao.hibernate.UserActionHibernateDAO;
 import com.weavedin.inventory_mgmt.dao.hibernate.VariantHibernateDAO;
 
+/**
+ * Factory which returns a set of specific DAO classes.
+ *  
+ * @author kiransringeri
+ *
+ */
 public class DataDAOFactory {
   private SessionFactory factory = null;
 

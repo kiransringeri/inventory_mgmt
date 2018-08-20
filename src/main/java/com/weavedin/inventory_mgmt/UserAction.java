@@ -8,9 +8,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+/**
+ * Class representing an user action. We will use it to save the data.
+ * 
+ * @author kiransringeri
+ *
+ */
 @Entity
 @Table(name = "variant")
-
 public class UserAction {
 
   @Id

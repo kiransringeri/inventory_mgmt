@@ -3,12 +3,11 @@ package com.weavedin.inventory_mgmt.dao.hibernate;
 import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import com.weavedin.inventory_mgmt.Item;
 import com.weavedin.inventory_mgmt.UserAction;
 import com.weavedin.inventory_mgmt.dao.UserActionDAO;
 
 /**
- * Hibernate DAO class for managing the storage of {@link Item}.
+ * Hibernate DAO class for managing the storage of {@link UserAction}.
  * @author kiransringeri
  *
  */

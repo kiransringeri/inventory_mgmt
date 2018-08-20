@@ -97,4 +97,30 @@ class VariantHibernateDAOTest {
     itemDao.delete(item);
     txn.commit();
   }
+  
+  @Test
+  void Should_AddNewPropertiesToVariant() {
+    Item item = getNewItem();
+
+    SessionFactory fact = FactoryUtil.getSessionFactory();
+    DataDAOFactory daoFact = new DataDAOFactory();
+    ItemDAO itemDao = daoFact.getItemDAO();
+    VariantDAO varDao = daoFact.getVariantDAO();
+
+    Transaction txn = fact.getCurrentSession().beginTransaction();
+
+    itemDao.save(item);
+    Variant var = getNewVariant(item.getId());
+    String propName = "Prop 1";
+    var.addProperty(propName, "Value 1");
+    varDao.save(var);
+    txn.commit();
+
+    txn = fact.getCurrentSession().beginTransaction();
+    Variant varFromDB = varDao.findByPrimaryKey(var.getId());
+    assertEquals(var.getProperty(propName), varFromDB.getProperty(propName));
+    varDao.delete(varFromDB);
+    itemDao.delete(item);
+    txn.commit();
+  }
 }

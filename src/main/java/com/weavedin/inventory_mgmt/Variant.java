@@ -1,11 +1,17 @@
 
 package com.weavedin.inventory_mgmt;
 
+import java.util.HashMap;
+import java.util.Map;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 
 /**
@@ -37,6 +43,12 @@ public class Variant {
 
   @Column(name = "quantity")
   private int quantity;
+
+  @ElementCollection
+  @MapKeyColumn(name="property")
+  @Column(name="value")
+  @CollectionTable(name="variant_property", joinColumns=@JoinColumn(name="variantId"))
+  private Map<String, String> properties = new HashMap<String, String>();
 
   public long getId() {
     return id;
@@ -84,5 +96,21 @@ public class Variant {
 
   public void setQuantity(int quantity) {
     this.quantity = quantity;
+  }
+
+  public Map<String, String> getProperties() {
+    return properties;
+  }
+
+  public void setProperties(Map<String, String> properties) {
+    this.properties = properties;
+  }
+  
+  public void addProperty(String property, String value) {
+    this.properties.put(property, value);
+  }
+  
+  public String getProperty(String property) {
+    return properties.get(property);
   }
 }

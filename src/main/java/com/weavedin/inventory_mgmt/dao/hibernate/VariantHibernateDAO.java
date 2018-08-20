@@ -4,12 +4,11 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import com.weavedin.inventory_mgmt.Item;
 import com.weavedin.inventory_mgmt.Variant;
 import com.weavedin.inventory_mgmt.dao.VariantDAO;
 
 /**
- * Hibernate DAO class for managing the storage of {@link Item}.
+ * Hibernate DAO class for managing the storage of {@link Variant}.
  * @author kiransringeri
  *
  */
