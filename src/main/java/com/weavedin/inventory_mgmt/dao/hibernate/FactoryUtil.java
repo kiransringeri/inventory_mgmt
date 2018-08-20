@@ -13,19 +13,21 @@ import org.hibernate.cfg.Configuration;
 public class FactoryUtil {
 
   private static SessionFactory sessionFactory = null;
-  private static final String CONFIG_FILE = "com/weavedin/inventory_mgmt/dao/hibernate/hibernate.cfg.xml";
+  private static final String CONFIG_FILE =
+      "com/weavedin/inventory_mgmt/dao/hibernate/hibernate.cfg.xml";
 
   /**
    * Returns the session factory
+   * 
    * @return
    */
   public static SessionFactory getSessionFactory() {
-    if(sessionFactory == null) {
+    if (sessionFactory == null) {
       initSessionFactory();
     }
     return sessionFactory;
   }
-  
+
   private static synchronized void initSessionFactory() {
     if (sessionFactory != null) {
       return;

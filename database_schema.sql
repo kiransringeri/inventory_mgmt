@@ -47,9 +47,14 @@ create table variant_property(
 create table user_action(
 	id bigint UNSIGNED primary key auto_increment,
 	userId integer unsigned not null,
+	branchId integer unsigned not null,
 	actionTime datetime not null, 
 	action varchar(100) not null,
-	property varchar(100) not null,
+	property text not null,
 	itemName varchar(100) not null,
-	CONSTRAINT fk_user_action_user FOREIGN KEY (userId) REFERENCES user(id)
+	CONSTRAINT fk_user_action_user FOREIGN KEY (userId) REFERENCES user(id),
+	constraint fk_user_action_branch foreign key (branchId) references branch (id)
 );
+
+alter table item add constraint unik_name unique (branchId, name);
+alter table variant add constraint unik_name unique (itemId, name);

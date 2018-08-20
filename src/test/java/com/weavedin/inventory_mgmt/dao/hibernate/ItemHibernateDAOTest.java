@@ -21,19 +21,19 @@ class ItemHibernateDAOTest {
     item.setProductCode("PCode 1");
     return item;
   }
-  
+
   @Test
   void Should_SaveNewItem() {
     Item item = getNewItem();
     SessionFactory fact = FactoryUtil.getSessionFactory();
     DataDAOFactory daoFact = new DataDAOFactory();
     ItemDAO dao = daoFact.getItemDAO();
-    
+
     Transaction txn = fact.getCurrentSession().beginTransaction();
     Item savedItem = dao.save(item);
     assertEquals(true, savedItem.getId() > 0);
     txn.commit();
-    
+
     txn = fact.getCurrentSession().beginTransaction();
     Item itemFromDB = dao.findByPrimaryKey(savedItem.getId());
     assertEquals(item.getBranchId(), itemFromDB.getBranchId());
@@ -41,52 +41,52 @@ class ItemHibernateDAOTest {
     assertEquals(item.getCategory(), itemFromDB.getCategory());
     assertEquals(item.getName(), itemFromDB.getName());
     assertEquals(item.getProductCode(), itemFromDB.getProductCode());
-    
+
     dao.delete(itemFromDB);
     txn.commit();
   }
 
   @Test
   void Should_UpdateValues() {
-//    Save new Item
+    // Save new Item
     Item item = getNewItem();
     SessionFactory fact = FactoryUtil.getSessionFactory();
     DataDAOFactory daoFact = new DataDAOFactory();
     ItemDAO dao = daoFact.getItemDAO();
-    
+
     Transaction txn = fact.getCurrentSession().beginTransaction();
     Item savedItem = dao.save(item);
     assertEquals(true, savedItem.getId() > 0);
     txn.commit();
-//    Update the item
+    // Update the item
     txn = fact.getCurrentSession().beginTransaction();
     Item updatedItem = dao.findByPrimaryKey(savedItem.getId());
-    updatedItem.setBrand(updatedItem.getBrand()+"_updated");
-    updatedItem.setCategory(updatedItem.getCategory()+"_updated");
-    updatedItem.setName(updatedItem.getName()+"_updated");
-    updatedItem.setProductCode(updatedItem.getProductCode()+"_updated");
+    // updatedItem.setBrand(updatedItem.getBrand()+"_updated");
+    updatedItem.setCategory(updatedItem.getCategory() + "_updated");
+    updatedItem.setName(updatedItem.getName() + "_updated");
+    updatedItem.setProductCode(updatedItem.getProductCode() + "_updated");
     dao.update(updatedItem);
     txn.commit();
-    
-//    Check the updated values
+
+    // Check the updated values
     txn = fact.getCurrentSession().beginTransaction();
     Item itemFromDB = dao.findByPrimaryKey(savedItem.getId());
     assertEquals(updatedItem.getBrand(), itemFromDB.getBrand());
     assertEquals(updatedItem.getCategory(), itemFromDB.getCategory());
     assertEquals(updatedItem.getName(), itemFromDB.getName());
     assertEquals(updatedItem.getProductCode(), itemFromDB.getProductCode());
-    
+
     dao.delete(itemFromDB);
     txn.commit();
   }
-  
+
   @Test
   void Should_SaveRetriveAndDeleteItem() {
     Item item = getNewItem();
     SessionFactory fact = FactoryUtil.getSessionFactory();
     DataDAOFactory daoFact = new DataDAOFactory();
     ItemDAO dao = daoFact.getItemDAO();
-    
+
     // Add item
     Transaction txn = fact.getCurrentSession().beginTransaction();
     dao.save(item);

@@ -13,11 +13,11 @@ import com.weavedin.inventory_mgmt.Variant;
  *
  */
 public interface InventoryManagementAPI {
-  public APIResponse<Item> saveItem(Item item);
-  public APIResponse<Item> updateItem(Item item);
-  public void deleteItem(Item item);
-  public APIResponse<Variant> saveVariant(Variant variant);
-  public APIResponse<Variant> updateVariant(Variant variant);
-  public void deleteVariant(Variant variant);
+  public APIResponse<Item> saveItem(long userId, long branchId, Item item);
+  public APIResponse<Item> updateItem(long userId, long branchId, Item item);
+  public APIResponse<Boolean> deleteItem(long userId, long branchId, Item item);
+  public APIResponse<Variant> saveVariant(long userId, long branchId, long itemId, Variant variant);
+  public APIResponse<Variant> updateVariant(long userId, long branchId, long itemId, Variant variant);
+  public APIResponse<Boolean> deleteVariant(long userId, long branchId, Variant variant);
   public APIResponse<List<UserActionFeed>> getUserActions(Date from, Date till, long userId);
 }

@@ -26,7 +26,7 @@ public class Variant {
 
   @Id
   @Column(name = "id")
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   @Column(name = "itemId")
@@ -45,9 +45,9 @@ public class Variant {
   private int quantity;
 
   @ElementCollection
-  @MapKeyColumn(name="property")
-  @Column(name="value")
-  @CollectionTable(name="variant_property", joinColumns=@JoinColumn(name="variantId"))
+  @MapKeyColumn(name = "property")
+  @Column(name = "value")
+  @CollectionTable(name = "variant_property", joinColumns = @JoinColumn(name = "variantId"))
   private Map<String, String> properties = new HashMap<String, String>();
 
   public long getId() {
@@ -105,11 +105,15 @@ public class Variant {
   public void setProperties(Map<String, String> properties) {
     this.properties = properties;
   }
-  
+
   public void addProperty(String property, String value) {
-    this.properties.put(property, value);
+    if (value == null) {
+      this.properties.remove(property);
+    } else {
+      this.properties.put(property, value);
+    }
   }
-  
+
   public String getProperty(String property) {
     return properties.get(property);
   }

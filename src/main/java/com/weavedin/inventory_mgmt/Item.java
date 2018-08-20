@@ -19,7 +19,7 @@ public class Item {
 
   @Id
   @Column(name = "id")
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   @Column(name = "branchId")
@@ -27,13 +27,13 @@ public class Item {
 
   @Column(name = "name")
   private String name;
-  
+
   @Column(name = "brand")
   private String brand;
-  
+
   @Column(name = "category")
   private String category;
-  
+
   @Column(name = "productCode")
   private String productCode;
 
