@@ -5,7 +5,7 @@
 
 	<groupId>com.weavedin</groupId>
 	<artifactId>inventory_mgmt</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<packaging>jar</packaging>
 
 	<name>inventory_mgmt</name>
@@ -62,4 +62,34 @@
 		</dependency>
 
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<appendAssemblyId>false</appendAssemblyId>
+							<archive>
+								<manifest>
+									<mainClass>
+										com.weavedin.inventory_mgmt.server.InventoryManagementHTTPServer
+									</mainClass>
+								</manifest>
+							</archive>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

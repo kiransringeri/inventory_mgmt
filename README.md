@@ -24,13 +24,15 @@
 ### System Requirements ###
   * Java 8 must be installed and JAVA_HOME path is set properly
   * MySQL database
+  * Maven
 
 ### Usage ###
   * Run the sql queries present in the file "database_schema.sql"  
-  * Run the sql queries present in the file "sample_data.sql"  
-  * Start the server by running the below command
-  * java com.weavedin.inventory_mgmt.server.InventoryManagementHTTPServer   
+  * Run the sql queries present in the file "sample_data.sql" 
+  * Run "mvn clean verify". This will generate the jar file.
+  * Run "java -jar target/inventory_mgmt-0.1.jar"   
   * The server will run on port 9090
+  * Then use the REST client and refer to below REST APIs
 
 ### REST APIS ###
 ##### Add New Item #####
