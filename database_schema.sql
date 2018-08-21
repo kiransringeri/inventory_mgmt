@@ -58,3 +58,8 @@ create table user_action(
 
 alter table item add constraint unik_name unique (branchId, name);
 alter table variant add constraint unik_name unique (itemId, name);
+/**
+ * Indexes to search faster
+ */
+ALTER TABLE user_action ADD INDEX indx_actiontime (actionTime);
+ALTER TABLE user_action ADD INDEX indx_actiontime_user (userId, actionTime);
