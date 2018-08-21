@@ -318,10 +318,33 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
   }
 
   @Override
-  public APIResponse<List<UserActionFeed>> getUserActions(Date from, Date till, long userId) {
-    // TODO Auto-generated method stub
-//    TODO: Implement this
-    return null;
+  public APIResponse<List<UserActionFeed>> getUserActions(Date from, Date till, Long userId) {
+    APIResponse<List<UserActionFeed>> retObj = new APIResponse<>();
+    Transaction txn = null;
+    try {
+      if(from == null || till == null) {
+        return null;
+      }
+      
+      DataDAOFactory daoFactry = new DataDAOFactory();
+      SessionFactory sessionFactry = FactoryUtil.getSessionFactory();
+      
+      txn = sessionFactry.getCurrentSession().beginTransaction();
+      List<UserActionFeed> items = daoFactry.getUserActionDAO().find(from, till, userId);
+      txn.rollback();
+      
+      retObj.setReturnData(items);
+      
+    }catch(Throwable th) {
+      retObj.setError(true);
+      retObj.setException(th);
+      try {
+        txn.rollback();
+      } catch (Exception e) {
+        
+      }
+    }
+    return retObj;
   }
 
   @Override

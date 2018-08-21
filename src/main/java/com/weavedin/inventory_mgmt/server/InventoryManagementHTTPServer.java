@@ -2,6 +2,8 @@ package com.weavedin.inventory_mgmt.server;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,7 @@ import com.google.gson.Gson;
 import com.weavedin.inventory_mgmt.Item;
 import com.weavedin.inventory_mgmt.Variant;
 import com.weavedin.inventory_mgmt.api.APIResponse;
+import com.weavedin.inventory_mgmt.dao.hibernate.UserActionHibernateDAO;
 import com.weavedin.inventory_mgmt.impl.InventoryManagementImpl;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.IStatus;
@@ -45,6 +48,38 @@ public class InventoryManagementHTTPServer extends RouterNanoHTTPD {
     addRoute("/variant", VariantHandler.class);
     addRoute("/variant/:id", VariantHandler.class);
 
+    addRoute("/feeds", UserActionFeedHandler.class);
+  }
+
+  private static String getQueryParameter(Map<String, List<String>> queryParams, String param) {
+    List<String> list = queryParams.get(param);
+    if (list == null || list.isEmpty()) {
+      return null;
+    }
+    return list.get(0);
+  }
+
+  public static class UserActionFeedHandler extends RequestHandler {
+    protected APIResponse getData(MethodType method, Long id, Map<String, List<String>> queryParams,
+        String content) throws Exception {
+      APIResponse retObj = null;
+      switch (method) {
+        case GET:
+          String fromStr = getQueryParameter(queryParams, "from");
+          String tillStr = getQueryParameter(queryParams, "till");
+          String userIdStr = getQueryParameter(queryParams, "userid");
+          SimpleDateFormat df =
+              new SimpleDateFormat(UserActionHibernateDAO.JAVA_DATE_FORMT_TILL_SECOND);
+          Date from = fromStr == null ? null : df.parse(fromStr);
+          Date till = tillStr == null ? null : df.parse(tillStr);
+          Long userId =
+              (userIdStr == null || userIdStr.isEmpty()) ? null : Long.parseLong(userIdStr);
+
+          InventoryManagementImpl impl = new InventoryManagementImpl();
+          return impl.getUserActions(from, till, userId);
+      }
+      return retObj;
+    }
   }
 
   public static class ItemHandler extends RequestHandler {
@@ -137,7 +172,7 @@ public class InventoryManagementHTTPServer extends RouterNanoHTTPD {
     }
 
     private Response getErrorResponse(Throwable th) {
-      if(th != null) {
+      if (th != null) {
         th.printStackTrace();
       }
       String errMsg = "Internal Server Error";
