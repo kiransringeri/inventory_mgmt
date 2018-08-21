@@ -49,5 +49,17 @@
 			<version>${gson.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.nanohttpd</groupId>
+			<artifactId>nanohttpd</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.nanohttpd/nanohttpd-nanolets -->
+		<dependency>
+			<groupId>org.nanohttpd</groupId>
+			<artifactId>nanohttpd-nanolets</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+
 	</dependencies>
 </project>

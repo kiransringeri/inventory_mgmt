@@ -7,6 +7,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,7 +23,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "variant")
-public class Variant {
+public class Variant implements Cloneable{
 
   @Id
   @Column(name = "id")
@@ -44,12 +45,26 @@ public class Variant {
   @Column(name = "quantity")
   private int quantity;
 
-  @ElementCollection
+  @ElementCollection(fetch=FetchType.EAGER)
   @MapKeyColumn(name = "property")
   @Column(name = "value")
   @CollectionTable(name = "variant_property", joinColumns = @JoinColumn(name = "variantId"))
   private Map<String, String> properties = new HashMap<String, String>();
 
+  @Override
+  public Object clone() {
+    Variant clone = new Variant();
+    clone.id = id;
+    clone.itemId = itemId;
+    clone.name = name;
+    clone.sellingPrice = sellingPrice;
+    clone.costPrice = costPrice;
+    clone.quantity = quantity;
+    if(properties != null) {
+      clone.properties = new HashMap<>(properties);
+    }
+    return clone;
+  }
   public long getId() {
     return id;
   }

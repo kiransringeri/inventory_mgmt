@@ -1,63 +1,96 @@
-Inventory is an integral part of our POS system. We have items which in turn have multiple variants under it. For example it could be a blue T-Shirts which are available in multiple sizes (S, M, L) etc. A variant can have multiple such properties (Sizes, Cloth Type etc). The prices and the other properties are defined on a variant. We'd like to track every user action that changes the attributes of an item or its variants.  
+## Inventory Management ##
   
-* Item    
-    * Attributes  
-        * Name  
-        * Brand  
-        * Category
-        * Product Code (Barcode)
-* Variant
-    * Attributes
-        * Name
-        * Selling Price
-        * Cost Price
-        * Properties - (Size:L, Cloth:Cotton)
-        * Quantity
-        * Think of them as filterable options on an ecommerce site.
-    * Eg:
-        * Item  - Cotton Shirt
-          * Variant - L (option - size : value - L)
-          * Variant - XL (option - size : value - XL)
-          * Variant - XXL (option - size : value - XXL)
+### Functionalities ###
+  * API to add/edit/delete Items
+  * API to add/edit/delete Variants of Items
+  * API to fetch user actions as feed
+  
+    
+### Entity Fields ###
+ #### Item ###
+  * branchId - id of the store branch
+  * name - name of the item
+  * brand - brand name of the item
+  * category - category of the item
+  * productCode - product code
+ #### Variant ####
+  * itemid - Id of the Item
+  * name - name of the variant
+  * sellingPrice - the selling price
+  * costPrice - the cost price
+  * quantity - quantity of the items in stock
+  * properties - A map of property name (String) to value (String).
 
-* A user can edit the attributes of an Item, its variants, and add new variant properties if needed.
+### System Requirements ###
+  * Java 8 must be installed and JAVA_HOME path is set properly
+  * MySQL database
 
-* The item is part of a branch which in turn is part to a store.
+### Usage ###
+  * Run the sql queries present in the file "database_schema.sql"  
+  * Run the sql queries present in the file "sample_data.sql"  
+  * Start the server by running the below command
+  * java com.weavedin.inventory_mgmt.server.InventoryManagementHTTPServer   
+  * The server will run on port 9090
 
-* User Actions
+### REST APIS ###
+##### Add New Item #####
+**Method:** POST  
+**URL:** http://localhost:9090/item?userid=1&branchid=1  
+**Data:**
+{
+"branchId" : 1,
+"name": "Item 1",
+"brand": "Brand 1",
+"category" : "Category 1",
+"productCode" : "Prod Code 1"
+}  
+**Response:** {"id":1,"branchId":1,"name":"Branch 1","brand":"Brand 1","category":"Category 1","productCode":"Prod Code 1"}      
+  
+##### Edit Item #####
+**Method:** PUT  
+**URL:** http://localhost:9090/item/1?userid=1&branchid=1  
+**Data:**
+{
+"branchId" : 1,
+"id": 1,
+"name": "Item 3.1",
+"brand": "Brand 1",
+"category" : "Category 1",
+"productCode" : "Prod Code 1"
+}  
+**Response:** {"id":1,"branchId":1,"name":"Item 3.1","brand":"Brand 1","category":"Category 1","productCode":"Prod Code 1"}    
 
-  * Edit Variant properties like variant name, selling price, cost price, quantity etc.
+##### Delete Item #####
+**Method:** DELETE  
+**URL:** http://localhost:9090/item/3?userid=1&branchid=1   
+**Response:** true    
 
-  * Edit item properties like the name, brand, category etc.
+##### List Items #####
+**Method:** GET  
+**URL:** http://localhost:9090/item?userid=1&branchid=1  
+**Response:** [{"id":1,"branchId":1,"name":"Item 1","brand":"Brand 1","category":"Category 1","productCode":"Prod Code 1"},{"id":2,"branchId":1,"name":"Item 2.2","brand":"Brand 2","category":"Category 2","productCode":"Prod Code 2"}]  
 
-  * Add/Delete variants from an item.
+##### Add New Variant #####
+**Method:** POST  
+**URL:** http://localhost:9090/variant?userid=1&branchid=1&itemid=80  
+**Data:**
+{"itemId":80,"name":"Variant 3","sellingPrice":100.5,"costPrice":90.75,"quantity":10,"properties":{"cloth":"Cotton"}}  
+**Response:** {"id":25,"itemId":80,"name":"Variant 3","sellingPrice":100.5,"costPrice":90.75,"quantity":10,"properties":{"cloth":"Cotton"}}      
+  
+##### Edit Variant #####
+**Method:** PUT  
+**URL:** http://localhost:9090/variant/25?userid=1&branchid=1&itemid=80  
+**Data:**
+{"id":25,"itemId":80,"name":"Variant 3.1","sellingPrice":100.5,"costPrice":90.75,"quantity":10,"properties":{"cloth":"Cotton", "Size":"L"}}  
+**Response:** {"id":25,"itemId":80,"name":"Variant 3.1","sellingPrice":100.5,"costPrice":90.75,"quantity":10,"properties":{"Size":"L","cloth":"Cotton"}}    
 
+##### Delete Variant #####
+**Method:** DELETE  
+**URL:** http://localhost:9090/variant/25?userid=1&branchid=1&itemid=80   
+**Response:** true    
 
-User Actions to be logged on editing/modifiying/creating or deleting the attributes below.
+##### List Variants #####
+**Method:** GET  
+**URL:** http://localhost:9090/variant?userid=1&branchid=1&itemid=80  
+**Response:** [{"id":20,"itemId":80,"name":"Variant 1.1","sellingPrice":100.5,"costPrice":90.75,"quantity":10,"properties":{"cloth":"Cotton"}},{"id":21,"itemId":80,"name":"Variant 1.2","sellingPrice":120.5,"costPrice":1000.75,"quantity":13,"properties":{}},{"id":23,"itemId":80,"name":"Variant 2.1","sellingPrice":120.5,"costPrice":1000.75,"quantity":13,"properties":{}}]  
 
-* Variant
-
-  * Cost Price
-
-  * Selling Price
-
-  * Variant Name
-
-  * Quantity
-
-  * Changing properties.
-
-* Item
-
-  * Name
-
-  * Brand
-
-  * Category
-
-  * Adding/Deleting Variant
-
-The log will have to be surfaced as a notification feed like the one on facebook. Eg, John edited selling price, cost price of item X. John edited the selling price of items X,Y and Z. The user might make multiple edits on an item or edit the same attribute on multiple items. These actions will have to be grouped by user and by time whenever possible.
-
-
-Build an API endpoint that takes the time range and  optionally the user id and outputs the user activity feed. If a user id is not passed it shows the activity log of all users. Actual screenshot are attached below. Only the fields mentioned above have to be implemented.

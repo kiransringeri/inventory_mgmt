@@ -42,10 +42,14 @@ public class VariantHibernateDAO implements VariantDAO {
     return entity;
   }
 
-  public List<Variant> findAll() {
+  public List<Variant> findAll(long itemId) {
     Session session = sessionFactory.getCurrentSession();
-    Query<Variant> query = session.createQuery("from " + Variant.class.getName());
+    Query<Variant> query = session.createQuery("from " + Variant.class.getName()+" where itemId=:itemId");
+    query.setParameter("itemId", itemId);
     return query.list();
+  }
+  public List<Variant> findAll() {
+    throw new UnsupportedOperationException();
   }
 
   public void delete(Variant entity) {
@@ -55,7 +59,7 @@ public class VariantHibernateDAO implements VariantDAO {
 
   public Variant findByPrimaryKey(Long id) {
     Session session = sessionFactory.getCurrentSession();
-    return session.load(Variant.class, id);
+    return session.get(Variant.class, id);
   }
 
 }

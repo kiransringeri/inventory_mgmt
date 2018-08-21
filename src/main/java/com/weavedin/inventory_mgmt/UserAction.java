@@ -15,7 +15,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "variant")
+@Table(name = "user_action")
 public class UserAction {
 
   @Id

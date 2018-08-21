@@ -66,7 +66,7 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
       
       Item itemInDB = daoFactry.getItemDAO().findByPrimaryKey(item.getId());
       String changes = updateItemData(itemInDB, item);
-      daoFactry.getItemDAO().save(item);
+      daoFactry.getItemDAO().update(itemInDB);
 
       if(changes != null) {
         UserAction action = new UserAction();
@@ -163,7 +163,7 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
   }
   
   @Override
-  public APIResponse<Boolean> deleteItem(long userId, long branchId, Item item) {
+  public APIResponse<Boolean> deleteItem(long userId, long branchId, long itemId) {
     APIResponse<Boolean> retObj = new APIResponse<>();
     Transaction txn = null;
     try {
@@ -171,6 +171,7 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
       SessionFactory sessionFactry = FactoryUtil.getSessionFactory();
       txn = sessionFactry.getCurrentSession().beginTransaction();
       
+      Item item = daoFactry.getItemDAO().findByPrimaryKey(itemId);
       daoFactry.getItemDAO().delete(item);
       
       UserAction action = new UserAction();
@@ -203,7 +204,8 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
     try {
       DataDAOFactory daoFactry = new DataDAOFactory();
       SessionFactory sessionFactry = FactoryUtil.getSessionFactory();
-      
+      txn = sessionFactry.getCurrentSession().beginTransaction();
+
       String itemName = getItemName(sessionFactry, variant.getItemId());
       
       UserAction action = new UserAction();
@@ -213,12 +215,11 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
       action.setBranchId(branchId);
       action.setItemName("variant "+variant.getName()+" of item "+itemName);
       
-      txn = sessionFactry.getCurrentSession().beginTransaction();
       daoFactry.getVariantDAO().save(variant);
       daoFactry.getUserActionDAO().save(action);
       txn.commit();
       
-      retObj.setReturnData(variant);
+      retObj.setReturnData(variant == null ? null : (Variant)variant.clone());
       
     }catch(Throwable th) {
       retObj.setError(true);
@@ -247,7 +248,7 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
       Variant variantInDB = daoFactry.getVariantDAO().findByPrimaryKey(variant.getId());
       
       String changes = updateVariantData(variantInDB, variant);
-      daoFactry.getVariantDAO().save(variant);
+      daoFactry.getVariantDAO().update(variantInDB);
 
       if(changes != null) {
         UserAction action = new UserAction();
@@ -260,7 +261,7 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
         daoFactry.getUserActionDAO().save(action);
       }
       txn.commit();
-      retObj.setReturnData(variantInDB);
+      retObj.setReturnData(variantInDB == null ? null : (Variant)variantInDB.clone());
     }catch(Throwable th) {
       retObj.setError(true);
       retObj.setException(th);
@@ -281,7 +282,7 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
   }
   
   @Override
-  public APIResponse<Boolean> deleteVariant(long userId, long branchId, Variant variant) {
+  public APIResponse<Boolean> deleteVariant(long userId, long branchId, long variantId) {
     APIResponse<Boolean> retObj = new APIResponse<>();
     Transaction txn = null;
     try {
@@ -289,6 +290,7 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
       SessionFactory sessionFactry = FactoryUtil.getSessionFactory();
       txn = sessionFactry.getCurrentSession().beginTransaction();
       
+      Variant variant = daoFactry.getVariantDAO().findByPrimaryKey(variantId);
       String itemName = getItemName(sessionFactry, variant.getItemId());
       
       daoFactry.getVariantDAO().delete(variant);
@@ -318,7 +320,119 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
   @Override
   public APIResponse<List<UserActionFeed>> getUserActions(Date from, Date till, long userId) {
     // TODO Auto-generated method stub
+//    TODO: Implement this
     return null;
+  }
+
+  @Override
+  public APIResponse<List<Item>> getItems(long userId, long branchId) {
+    APIResponse<List<Item>> retObj = new APIResponse<>();
+    Transaction txn = null;
+    try {
+      DataDAOFactory daoFactry = new DataDAOFactory();
+      SessionFactory sessionFactry = FactoryUtil.getSessionFactory();
+      
+      txn = sessionFactry.getCurrentSession().beginTransaction();
+      List<Item> items = daoFactry.getItemDAO().findAll();
+      txn.rollback();
+      
+      retObj.setReturnData(items);
+      
+    }catch(Throwable th) {
+      retObj.setError(true);
+      retObj.setException(th);
+      try {
+        txn.rollback();
+      } catch (Exception e) {
+        
+      }
+    }
+    return retObj;
+  }
+
+  @Override
+  public APIResponse<Item> getItem(long userId, long branchId, long itemId) {
+    APIResponse<Item> retObj = new APIResponse<>();
+    Transaction txn = null;
+    try {
+      DataDAOFactory daoFactry = new DataDAOFactory();
+      SessionFactory sessionFactry = FactoryUtil.getSessionFactory();
+      
+      txn = sessionFactry.getCurrentSession().beginTransaction();
+      Item item = daoFactry.getItemDAO().findByPrimaryKey(itemId);
+      txn.rollback();
+      
+      retObj.setReturnData(item);
+      
+    }catch(Throwable th) {
+      retObj.setError(true);
+      retObj.setException(th);
+      try {
+        txn.rollback();
+      } catch (Exception e) {
+        
+      }
+    }
+    return retObj;
+  }
+
+  @Override
+  public APIResponse<List<Variant>> getVariants(long userId, long branchId, long itemId) {
+    APIResponse<List<Variant>> retObj = new APIResponse<>();
+    Transaction txn = null;
+    try {
+      DataDAOFactory daoFactry = new DataDAOFactory();
+      SessionFactory sessionFactry = FactoryUtil.getSessionFactory();
+      
+      txn = sessionFactry.getCurrentSession().beginTransaction();
+      List<Variant> items = daoFactry.getVariantDAO().findAll(itemId);
+      txn.rollback();
+      
+      List<Variant> itemClones = null;
+      if(items != null) {
+        itemClones = new ArrayList<>();
+        for(Variant var : items) {
+          itemClones.add((Variant)var.clone());
+        }
+      }
+      retObj.setReturnData(itemClones);
+      
+    }catch(Throwable th) {
+      retObj.setError(true);
+      retObj.setException(th);
+      try {
+        txn.rollback();
+      } catch (Exception e) {
+        
+      }
+    }
+    return retObj;
+  }
+
+  @Override
+  public APIResponse<Variant> getVariant(long userId, long branchId, long variantId) {
+    APIResponse<Variant> retObj = new APIResponse<>();
+    Transaction txn = null;
+    try {
+      DataDAOFactory daoFactry = new DataDAOFactory();
+      SessionFactory sessionFactry = FactoryUtil.getSessionFactory();
+      
+      txn = sessionFactry.getCurrentSession().beginTransaction();
+      Variant variant = daoFactry.getVariantDAO().findByPrimaryKey(variantId);
+      txn.rollback();
+      
+      retObj.setReturnData(variant == null ? null : (Variant)variant.clone());
+      
+    }catch(Throwable th) {
+      retObj.setError(true);
+      retObj.setException(th);
+      try {
+        txn.rollback();
+      } catch (Exception e) {
+        
+      }
+    }
+    return retObj;
   }
 
 }
