@@ -17,7 +17,7 @@ class ItemHibernateDAOTest {
     item.setBranchId(branchId);
     item.setBrand("Brand 1");
     item.setCategory("Cate 1");
-    item.setName("Item 1");
+    item.setName("Item " + System.currentTimeMillis());
     item.setProductCode("PCode 1");
     return item;
   }

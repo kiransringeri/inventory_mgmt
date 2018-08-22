@@ -2,6 +2,8 @@ package com.weavedin.inventory_mgmt.dao.hibernate;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.Session;
@@ -13,6 +15,7 @@ import com.weavedin.inventory_mgmt.dao.UserActionDAO;
 
 /**
  * Hibernate DAO class for managing the storage of {@link UserAction}.
+ * This stores the user actions in MySQL table 'user_action'.
  * 
  * @author kiransringeri
  *
@@ -26,14 +29,14 @@ public class UserActionHibernateDAO implements UserActionDAO {
   private static final String sql_query_without_userid =
       "select u.id user_id, u.name user_name, date_format(actionTime, \"" + DATE_FORMT_TILL_SECOND
           + "\") action_datetime,  "
-          + "concat_ws(\" \" , action, concat(group_concat(distinct property), ' of'), itemName) "
+          + "concat_ws(\" \" , action, concat(group_concat(distinct property SEPARATOR \", \"), ' of'), itemName) "
           + "from user_action ua, user u "
           + "where ua.userId=u.id and actionTime between :startTime and :endTime "
           + "group by u.id, action, itemName, action_datetime\n" + "order by actionTime desc";
   private static final String sql_query_with_userid =
       "select u.id user_id, u.name user_name, date_format(actionTime, \"" + DATE_FORMT_TILL_SECOND
           + "\") action_datetime,  "
-          + "concat_ws(\" \" , action, concat(group_concat(distinct property), ' of'), itemName) "
+          + "concat_ws(\" \" , action, concat(group_concat(distinct property SEPARATOR \", \"), ' of'), itemName) "
           + "from user_action ua, user u "
           + "where ua.userId=u.id and u.id=:userId and actionTime between :startTime and :endTime "
           + "group by u.id, action, itemName, action_datetime\n" + "order by actionTime desc";;
@@ -79,23 +82,38 @@ public class UserActionHibernateDAO implements UserActionDAO {
     return entity;
   }
 
-  /**
-   * Updates the item in the database.
-   */
-  public UserAction update(UserAction entity) {
-    throw new UnsupportedOperationException();
+  @Override
+  public void addUserAction(long userId, long branchId, UserActionType actionType,
+      String entityName) {
+    List<String> properties = new ArrayList<>();
+    properties.add(null);
+    addUserAction(userId, branchId, actionType, entityName, properties);
   }
 
-  public List<UserAction> findAll() {
-    throw new UnsupportedOperationException();
+  @Override
+  public void addUserAction(long userId, long branchId, UserActionType actionType,
+      String entityName, String property) {
+    List<String> properties = new ArrayList<>();
+    properties.add(property);
+    addUserAction(userId, branchId, actionType, entityName, properties);
   }
 
-  public void delete(UserAction entity) {
-    throw new UnsupportedOperationException();
-  }
-
-  public UserAction findByPrimaryKey(Long id) {
-    throw new UnsupportedOperationException();
+  @Override
+  public void addUserAction(long userId, long branchId, UserActionType actionType,
+      String entityName, Collection<String> properties) {
+    if (properties != null && !properties.isEmpty()) {
+      Date currTime = Calendar.getInstance().getTime();
+      for (String change : properties) {
+        UserAction action = new UserAction();
+        action.setAction(actionType.getStorageValue());
+        action.setActionTime(currTime);
+        action.setUserId(userId);
+        action.setBranchId(branchId);
+        action.setItemName(entityName);
+        action.setProperty(change);
+        sessionFactory.getCurrentSession().save(action);
+      }
+    }
   }
 
 }

@@ -1,7 +1,6 @@
 package com.weavedin.inventory_mgmt.impl;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,14 +10,20 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import com.weavedin.inventory_mgmt.Item;
-import com.weavedin.inventory_mgmt.UserAction;
 import com.weavedin.inventory_mgmt.UserActionFeed;
 import com.weavedin.inventory_mgmt.Variant;
 import com.weavedin.inventory_mgmt.api.APIResponse;
 import com.weavedin.inventory_mgmt.api.InventoryManagementAPI;
 import com.weavedin.inventory_mgmt.dao.DataDAOFactory;
+import com.weavedin.inventory_mgmt.dao.UserActionDAO.UserActionType;
 import com.weavedin.inventory_mgmt.dao.hibernate.FactoryUtil;
 
+/**
+ * Class that implements the API functionalities.
+ * 
+ * @author kiransringeri
+ *
+ */
 public class InventoryManagementImpl implements InventoryManagementAPI {
 
   @Override
@@ -26,19 +31,13 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
     APIResponse<Item> retObj = new APIResponse<>();
     Transaction txn = null;
     try {
-      UserAction action = new UserAction();
-      action.setAction("Added");
-      action.setActionTime(Calendar.getInstance().getTime());
-      action.setUserId(userId);
-      action.setBranchId(branchId);
-      action.setItemName("item " + item.getName());
-
       DataDAOFactory daoFactry = new DataDAOFactory();
       SessionFactory sessionFactry = FactoryUtil.getSessionFactory();
 
       txn = sessionFactry.getCurrentSession().beginTransaction();
       daoFactry.getItemDAO().save(item);
-      daoFactry.getUserActionDAO().save(action);
+      daoFactry.getUserActionDAO().addUserAction(userId, branchId, UserActionType.ADD,
+          "item " + item.getName());
       txn.commit();
 
       retObj.setReturnData(item);
@@ -67,20 +66,8 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
       Item itemInDB = daoFactry.getItemDAO().findByPrimaryKey(item.getId());
       Collection<String> changes = updateItemData(itemInDB, item);
       daoFactry.getItemDAO().update(itemInDB);
-
-      if (changes != null && !changes.isEmpty()) {
-        Date currTime = Calendar.getInstance().getTime();
-        for (String change : changes) {
-          UserAction action = new UserAction();
-          action.setAction("Edited");
-          action.setActionTime(currTime);
-          action.setUserId(userId);
-          action.setBranchId(branchId);
-          action.setItemName("item " + item.getName());
-          action.setProperty(change);
-          daoFactry.getUserActionDAO().save(action);
-        }
-      }
+      daoFactry.getUserActionDAO().addUserAction(userId, branchId, UserActionType.EDIT,
+          "item " + item.getName(), changes);
       txn.commit();
       retObj.setReturnData(itemInDB);
     } catch (Throwable th) {
@@ -176,15 +163,8 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
 
       Item item = daoFactry.getItemDAO().findByPrimaryKey(itemId);
       daoFactry.getItemDAO().delete(item);
-
-      UserAction action = new UserAction();
-      action.setAction("Deleted");
-      action.setActionTime(Calendar.getInstance().getTime());
-      action.setUserId(userId);
-      action.setBranchId(branchId);
-      action.setItemName("item " + item.getName());
-      daoFactry.getUserActionDAO().save(action);
-
+      daoFactry.getUserActionDAO().addUserAction(userId, branchId, UserActionType.DELETE,
+          "item " + item.getName());
       txn.commit();
       retObj.setReturnData(true);
     } catch (Throwable th) {
@@ -210,16 +190,9 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
       txn = sessionFactry.getCurrentSession().beginTransaction();
 
       String itemName = getItemName(sessionFactry, variant.getItemId());
-
-      UserAction action = new UserAction();
-      action.setAction("Added");
-      action.setActionTime(Calendar.getInstance().getTime());
-      action.setUserId(userId);
-      action.setBranchId(branchId);
-      action.setItemName("variant " + variant.getName() + " of item " + itemName);
-
       daoFactry.getVariantDAO().save(variant);
-      daoFactry.getUserActionDAO().save(action);
+      daoFactry.getUserActionDAO().addUserAction(userId, branchId, UserActionType.ADD,
+          "variant " + variant.getName() + " of item " + itemName);
       txn.commit();
 
       retObj.setReturnData(variant == null ? null : (Variant) variant.clone());
@@ -252,20 +225,9 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
 
       Collection<String> changes = updateVariantData(variantInDB, variant);
       daoFactry.getVariantDAO().update(variantInDB);
+      daoFactry.getUserActionDAO().addUserAction(userId, branchId, UserActionType.EDIT,
+          "variant " + variant.getName() + " of item " + itemName, changes);
 
-      if (changes != null && !changes.isEmpty()) {
-        Date currTime = Calendar.getInstance().getTime();
-        for (String change : changes) {
-          UserAction action = new UserAction();
-          action.setAction("Edited");
-          action.setActionTime(currTime);
-          action.setUserId(userId);
-          action.setBranchId(branchId);
-          action.setItemName("variant " + variant.getName() + " of item " + itemName);
-          action.setProperty(change);
-          daoFactry.getUserActionDAO().save(action);
-        }
-      }
       txn.commit();
       retObj.setReturnData(variantInDB == null ? null : (Variant) variantInDB.clone());
     } catch (Throwable th) {
@@ -301,14 +263,8 @@ public class InventoryManagementImpl implements InventoryManagementAPI {
       String itemName = getItemName(sessionFactry, variant.getItemId());
 
       daoFactry.getVariantDAO().delete(variant);
-
-      UserAction action = new UserAction();
-      action.setAction("Deleted");
-      action.setActionTime(Calendar.getInstance().getTime());
-      action.setUserId(userId);
-      action.setBranchId(branchId);
-      action.setItemName("variant " + variant.getName() + " of item " + itemName);
-      daoFactry.getUserActionDAO().save(action);
+      daoFactry.getUserActionDAO().addUserAction(userId, branchId, UserActionType.DELETE,
+          "variant " + variant.getName() + " of item " + itemName);
 
       txn.commit();
       retObj.setReturnData(true);

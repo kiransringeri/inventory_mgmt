@@ -18,7 +18,7 @@ class VariantHibernateDAOTest {
     item.setBranchId(branchId);
     item.setBrand("Brand 1");
     item.setCategory("Cate 1");
-    item.setName("Item 1");
+    item.setName("Item "+ System.currentTimeMillis());
     item.setProductCode("PCode 1");
     return item;
   }
@@ -27,7 +27,7 @@ class VariantHibernateDAOTest {
     Variant var = new Variant();
     var.setCostPrice(1234.0F);
     var.setItemId(itemId);
-    var.setName("Variant 1");
+    var.setName("Variant " + System.currentTimeMillis());
     var.setQuantity(2);
     var.setSellingPrice(1300.0F);
     return var;
